@@ -86,7 +86,10 @@ const sendNewsletterTool = tool({
   <hr>
   `).join('')}
 
-  <p>This newsletter was curated by AI agents</p>
+  <p style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; font-size: 14px;">
+    This newsletter was curated by AI agents<br>
+    <a href="%%unsubscribe%%" style="color: #999; text-decoration: underline;">Unsubscribe</a>
+  </p>
 </body>
 </html>
       `;

@@ -4,240 +4,139 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Get the top 10 AI news stories delivered to your inbox daily. Curated by AI agents.">
-  <title>AI News Daily - Your Daily AI Newsletter</title>
+  <title>AI News Daily</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      line-height: 1.6;
-      color: #333;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 600px;
-      width: 100%;
-      background: white;
-      border-radius: 20px;
-      padding: 60px 40px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      text-align: center;
-    }
-
-    .emoji {
-      font-size: 80px;
-      margin-bottom: 20px;
-      animation: float 3s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
-    }
-
-    h1 {
-      font-size: 42px;
-      margin-bottom: 16px;
-      color: #1a202c;
-      font-weight: 700;
-    }
-
-    .tagline {
-      font-size: 20px;
-      color: #718096;
-      margin-bottom: 40px;
-    }
-
-    .features {
-      text-align: left;
-      margin: 40px 0;
-      padding: 0 20px;
-    }
-
-    .feature {
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-      font-size: 16px;
-      color: #4a5568;
-    }
-
-    .feature-icon {
-      font-size: 24px;
-      margin-right: 12px;
-      flex-shrink: 0;
-    }
-
-    .signup-form {
-      margin-top: 40px;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    input[type="email"] {
-      width: 100%;
-      padding: 16px 20px;
-      font-size: 16px;
-      border: 2px solid #e2e8f0;
-      border-radius: 10px;
-      transition: all 0.3s ease;
-      outline: none;
-    }
-
-    input[type="email"]:focus {
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-
-    .subscribe-btn {
-      width: 100%;
-      padding: 16px 20px;
-      font-size: 18px;
-      font-weight: 600;
-      color: white;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .subscribe-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-    }
-
-    .subscribe-btn:active {
-      transform: translateY(0);
-    }
-
-    .subscribe-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .message {
-      margin-top: 20px;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-size: 14px;
-      display: none;
-    }
-
-    .message.success {
-      background: #c6f6d5;
-      color: #22543d;
-      border: 1px solid #9ae6b4;
-      display: block;
-    }
-
-    .message.error {
-      background: #fed7d7;
-      color: #742a2a;
-      border: 1px solid #fc8181;
-      display: block;
-    }
-
-    .footer {
-      margin-top: 40px;
-      padding-top: 30px;
-      border-top: 1px solid #e2e8f0;
-      color: #a0aec0;
-      font-size: 14px;
-    }
-
-    .footer a {
-      color: #667eea;
-      text-decoration: none;
-    }
-
-    .footer a:hover {
-      text-decoration: underline;
-    }
-
-    @media (max-width: 640px) {
-      .container {
-        padding: 40px 24px;
-      }
-
-      h1 {
-        font-size: 32px;
-      }
-
-      .tagline {
-        font-size: 18px;
-      }
-
-      .emoji {
-        font-size: 60px;
-      }
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      font-weight: 300;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
   </style>
 </head>
-<body>
-  <div class="container">
-    <div class="emoji">🤖</div>
-    <h1>AI News Daily</h1>
-    <p class="tagline">The top 10 AI stories delivered to your inbox every morning</p>
+<body class="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+  <main class="max-w-xl mx-auto px-6 py-20 min-h-screen">
 
-    <div class="features">
-      <div class="feature">
-        <span class="feature-icon">🔍</span>
-        <span>Curated by autonomous AI agents</span>
-      </div>
-      <div class="feature">
-        <span class="feature-icon">📰</span>
-        <span>Top 10 most important stories daily</span>
-      </div>
-      <div class="feature">
-        <span class="feature-icon">⚡</span>
-        <span>Real-time web search for latest news</span>
-      </div>
-      <div class="feature">
-        <span class="feature-icon">✨</span>
-        <span>Clear summaries that explain why it matters</span>
-      </div>
-      <div class="feature">
-        <span class="feature-icon">🆓</span>
-        <span>100% free, no spam, unsubscribe anytime</span>
-      </div>
-    </div>
+    <!-- Header -->
+    <section class="mb-14">
+      <div class="text-6xl mb-4">🤖</div>
+      <h1 class="text-xl font-normal mb-2">AI News Daily</h1>
+      <p class="text-sm text-slate-600 dark:text-slate-400">
+        Top 10 AI stories, delivered every morning
+      </p>
+    </section>
 
-    <form class="signup-form" id="signupForm">
-      <div class="form-group">
-        <input
-          type="email"
-          id="email"
-          name="email"
-          placeholder="Enter your email address"
-          required
-          autocomplete="email"
-        >
+    <!-- About -->
+    <section class="my-9 text-sm">
+      <h3 class="mb-3 font-normal">About</h3>
+      <div class="text-slate-600 dark:text-slate-400 leading-relaxed">
+        <p class="mb-3">
+          A daily newsletter featuring the most important AI developments, curated by autonomous AI agents.
+        </p>
+        <p>
+          Every morning at 8:00 AM UTC, our agents search the web for breaking AI news,
+          analyze hundreds of articles, and select the top 10 stories that matter most.
+        </p>
       </div>
-      <button type="submit" class="subscribe-btn" id="submitBtn">
-        Subscribe to AI News Daily
-      </button>
-      <div id="message" class="message"></div>
-    </form>
+    </section>
 
-    <div class="footer">
-      <p>Powered by AI agents • Delivered via <a href="https://useplunk.com" target="_blank">Plunk</a></p>
-      <p style="margin-top: 8px;">By subscribing, you agree to receive daily emails. Unsubscribe anytime.</p>
-    </div>
-  </div>
+    <!-- What You Get -->
+    <section class="my-14 text-sm">
+      <h3 class="mb-6 font-normal">What you get</h3>
+      <div class="flex flex-col gap-6">
+
+        <div class="flex">
+          <div class="mr-8 max-w-[100px] w-full text-slate-400 dark:text-slate-500 flex-shrink-0">
+            Daily
+          </div>
+          <div class="flex flex-col flex-1">
+            <h4 class="font-normal">10 curated stories</h4>
+            <p class="text-slate-600 dark:text-slate-400 mt-1">
+              The most important AI news from the past 24 hours
+            </p>
+          </div>
+        </div>
+
+        <div class="flex">
+          <div class="mr-8 max-w-[100px] w-full text-slate-400 dark:text-slate-500 flex-shrink-0">
+            Quality
+          </div>
+          <div class="flex flex-col flex-1">
+            <h4 class="font-normal">Clear summaries</h4>
+            <p class="text-slate-600 dark:text-slate-400 mt-1">
+              Each story explained in 2-3 sentences with context on why it matters
+            </p>
+          </div>
+        </div>
+
+        <div class="flex">
+          <div class="mr-8 max-w-[100px] w-full text-slate-400 dark:text-slate-500 flex-shrink-0">
+            Coverage
+          </div>
+          <div class="flex flex-col flex-1">
+            <h4 class="font-normal">Diverse topics</h4>
+            <p class="text-slate-600 dark:text-slate-400 mt-1">
+              LLMs, products, research, funding, policy, ethics, open source, and more
+            </p>
+          </div>
+        </div>
+
+        <div class="flex">
+          <div class="mr-8 max-w-[100px] w-full text-slate-400 dark:text-slate-500 flex-shrink-0">
+            Free
+          </div>
+          <div class="flex flex-col flex-1">
+            <h4 class="font-normal">No cost, no spam</h4>
+            <p class="text-slate-600 dark:text-slate-400 mt-1">
+              100% free forever. Unsubscribe anytime with one click.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Subscribe -->
+    <section class="my-14 text-sm">
+      <h3 class="mb-6 font-normal">Subscribe</h3>
+      <form id="signupForm" class="max-w-md">
+        <div class="flex flex-col gap-3">
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="your@email.com"
+            required
+            autocomplete="email"
+            class="px-4 py-2.5 text-sm border border-slate-200 dark:border-slate-800 rounded-md
+                   bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100
+                   placeholder:text-slate-400 dark:placeholder:text-slate-500
+                   focus:outline-none focus:ring-2 focus:ring-slate-400 dark:focus:ring-slate-600
+                   transition-all"
+          >
+          <button
+            type="submit"
+            id="submitBtn"
+            class="px-4 py-2.5 text-sm bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900
+                   rounded-md hover:bg-slate-800 dark:hover:bg-slate-200
+                   transition-colors disabled:opacity-50 disabled:cursor-not-allowed
+                   font-normal"
+          >
+            Subscribe
+          </button>
+        </div>
+        <div id="message" class="mt-3 text-sm hidden"></div>
+      </form>
+    </section>
+
+    <!-- Footer -->
+    <footer class="mt-20 pt-6 border-t border-slate-200 dark:border-slate-800 text-sm text-slate-400 dark:text-slate-500">
+      <p>Powered by AI agents • Delivered via Plunk</p>
+      <p class="mt-2">By subscribing, you agree to receive daily emails. Unsubscribe anytime.</p>
+    </footer>
+
+  </main>
 
   <script>
     const form = document.getElementById('signupForm');
@@ -255,10 +154,9 @@
         return;
       }
 
-      // Disable form
       submitBtn.disabled = true;
       submitBtn.textContent = 'Subscribing...';
-      messageDiv.style.display = 'none';
+      messageDiv.classList.add('hidden');
 
       try {
         const response = await fetch('/api/subscribe', {
@@ -272,33 +170,37 @@
         const data = await response.json();
 
         if (response.ok && data.success) {
-          showMessage('🎉 Success! Check your email to confirm your subscription.', 'success');
+          showMessage('✓ Success! Check your email to confirm.', 'success');
           emailInput.value = '';
-
-          // Track signup (optional - add your analytics here)
-          if (typeof gtag !== 'undefined') {
-            gtag('event', 'sign_up', { method: 'email' });
-          }
         } else {
           showMessage(data.error || 'Something went wrong. Please try again.', 'error');
         }
       } catch (error) {
         console.error('Signup error:', error);
-        showMessage('Network error. Please check your connection and try again.', 'error');
+        showMessage('Network error. Please check your connection.', 'error');
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Subscribe to AI News Daily';
+        submitBtn.textContent = 'Subscribe';
       }
     });
 
     function showMessage(text, type) {
       messageDiv.textContent = text;
-      messageDiv.className = `message ${type}`;
-      messageDiv.style.display = 'block';
+      messageDiv.className = `mt-3 text-sm ${
+        type === 'success'
+          ? 'text-green-600 dark:text-green-400'
+          : 'text-red-600 dark:text-red-400'
+      }`;
+      messageDiv.classList.remove('hidden');
     }
 
     // Auto-focus email input
     emailInput.focus();
+
+    // Dark mode support
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.documentElement.classList.add('dark');
+    }
   </script>
 </body>
 </html>
