@@ -2,8 +2,9 @@
  * Tools index - exports all tools for easy importing
  */
 const { sendNewsletterTool } = require('./plunkTool');
+const { curateArticlesTool } = require('./curationTool');
 
 module.exports = {
   sendNewsletterTool,
-  // Add more tools here as they're created
+  curateArticlesTool,
 };

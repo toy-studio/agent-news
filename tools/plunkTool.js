@@ -1,6 +1,7 @@
 const { tool } = require('@openai/agents');
 const { z } = require('zod');
 const Plunk = require('@plunk/node').default;
+// Using native fetch (Node 18+)
 
 /**
  * Plunk Email Tool
@@ -16,9 +17,9 @@ const sendNewsletterTool = tool({
       summary: z.string(),
       url: z.string(),
     })).describe('Array of curated articles to include in the newsletter'),
-    broadcastToAll: z.boolean().optional().default(false).describe('If true, send to all contacts in Plunk project. If false, send to recipientEmail.'),
-    recipientEmail: z.string().email().optional().describe('Email address to send the newsletter to (only used if broadcastToAll is false)'),
-    date: z.string().optional().describe('Date for the newsletter (defaults to today)'),
+    broadcastToAll: z.boolean().default(false).describe('If true, broadcast to all contacts in Plunk project using Campaigns API. If false, send to recipientEmail.'),
+    recipientEmail: z.string().email().default('').describe('Email address to send the newsletter to (only used if broadcastToAll is false, defaults to RECIPIENT_EMAIL env var)'),
+    date: z.string().default('').describe('Date for the newsletter (defaults to today)'),
   }),
   execute: async (input) => {
     try {
@@ -31,32 +32,32 @@ const sendNewsletterTool = tool({
 
       const plunk = new Plunk(process.env.PLUNK_API_KEY);
 
-      const newsletterDate = input.date || new Date().toLocaleDateString('en-US', {
+      const newsletterDate = (input.date && input.date !== '') ? input.date : new Date().toLocaleDateString('en-US', {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
         day: 'numeric',
       });
 
-      // Determine if we're broadcasting or sending to single recipient
+      // Determine broadcast mode
       const isBroadcast = input.broadcastToAll || process.env.PLUNK_BROADCAST_MODE === 'true';
 
       console.log('\n' + '='.repeat(60));
       console.log('📧 PLUNK EMAIL TOOL - STARTING');
       console.log('='.repeat(60));
       console.log(`Mode: ${isBroadcast ? 'BROADCAST' : 'SINGLE RECIPIENT'}`);
-      console.log(`PLUNK_BROADCAST_MODE env: ${process.env.PLUNK_BROADCAST_MODE}`);
       console.log(`Articles received: ${input.articles.length}`);
       console.log(`Newsletter date: ${newsletterDate}`);
 
-      if (isBroadcast) {
-        console.log(`📧 Broadcasting newsletter to ALL contacts in Plunk project`);
-      } else {
-        const recipient = input.recipientEmail || process.env.RECIPIENT_EMAIL;
+      if (!isBroadcast) {
+        // Get recipient email for single-recipient mode
+        const recipient = (input.recipientEmail && input.recipientEmail !== '') ? input.recipientEmail : process.env.RECIPIENT_EMAIL;
         if (!recipient) {
           throw new Error('No recipient email specified and RECIPIENT_EMAIL not set in environment');
         }
-        console.log(`📧 Sending to single recipient: ${recipient}`);
+        console.log(`📧 Sending to: ${recipient}`);
+      } else {
+        console.log(`📧 Broadcasting to all contacts in Plunk project`);
       }
 
       console.log('\n📰 Articles to be sent:');
@@ -67,168 +68,91 @@ const sendNewsletterTool = tool({
       });
       console.log('='.repeat(60) + '\n');
 
-      // Create HTML email content
+      // Create simple HTML email content
       const htmlContent = `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      line-height: 1.6;
-      color: #333;
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px;
-      background-color: #f5f5f5;
-    }
-    .container {
-      background-color: #ffffff;
-      border-radius: 8px;
-      padding: 30px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .header {
-      border-bottom: 3px solid #3b82f6;
-      padding-bottom: 20px;
-      margin-bottom: 30px;
-    }
-    h1 {
-      color: #1f2937;
-      margin: 0 0 10px 0;
-      font-size: 28px;
-    }
-    .date {
-      color: #6b7280;
-      font-size: 14px;
-      margin: 0;
-    }
-    .article {
-      margin-bottom: 30px;
-      padding-bottom: 30px;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    .article:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
-    }
-    .article-number {
-      display: inline-block;
-      background-color: #3b82f6;
-      color: white;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      text-align: center;
-      line-height: 24px;
-      font-size: 14px;
-      font-weight: bold;
-      margin-right: 10px;
-    }
-    .article-headline {
-      color: #1f2937;
-      font-size: 20px;
-      font-weight: 600;
-      margin: 10px 0;
-      line-height: 1.4;
-    }
-    .article-headline a {
-      color: #1f2937;
-      text-decoration: none;
-    }
-    .article-headline a:hover {
-      color: #3b82f6;
-    }
-    .article-summary {
-      color: #4b5563;
-      margin: 10px 0;
-      font-size: 15px;
-    }
-    .read-more {
-      display: inline-block;
-      color: #3b82f6;
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 14px;
-    }
-    .read-more:hover {
-      text-decoration: underline;
-    }
-    .footer {
-      margin-top: 40px;
-      padding-top: 20px;
-      border-top: 1px solid #e5e7eb;
-      text-align: center;
-      color: #6b7280;
-      font-size: 13px;
-    }
-  </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>🤖 AI News Daily</h1>
-      <p class="date">${newsletterDate}</p>
-    </div>
+  <h1>🤖 AI News Daily</h1>
+  <p>${newsletterDate}</p>
 
-    ${input.articles.map((article, index) => `
-    <div class="article">
-      <div>
-        <span class="article-number">${index + 1}</span>
-      </div>
-      <h2 class="article-headline">
-        <a href="${article.url}" target="_blank">${article.headline}</a>
-      </h2>
-      <p class="article-summary">${article.summary}</p>
-      <a href="${article.url}" class="read-more" target="_blank">Read more →</a>
-    </div>
-    `).join('')}
+  ${input.articles.map((article, index) => `
+  <h2>${index + 1}. <a href="${article.url}">${article.headline}</a></h2>
+  <p>${article.summary}</p>
+  <p><a href="${article.url}">Read more →</a></p>
+  <hr>
+  `).join('')}
 
-    <div class="footer">
-      <p>This newsletter was curated by AI agents using OpenAI and Firecrawl</p>
-      <p>Sent with ❤️ by your AI news assistant</p>
-    </div>
-  </div>
+  <p>This newsletter was curated by AI agents</p>
 </body>
 </html>
       `;
 
       // Send email via Plunk
-      let result;
-
       console.log('📤 Sending email via Plunk API...\n');
 
       if (isBroadcast) {
-        // Send to all contacts using Plunk's campaigns API
-        // Step 1: Create the campaign
-        // Step 2: Send the campaign
-        console.log('🔧 Step 1: Creating Plunk Campaign');
+        // BROADCAST MODE: Use Campaigns API via direct HTTP calls
+        console.log('🔧 Step 1: Creating Plunk Campaign via HTTP API');
+        console.log(`   POST https://api.useplunk.com/v1/campaigns`);
         console.log(`   name: "AI News Daily - ${newsletterDate}"`);
         console.log(`   subject: "🤖 AI News Daily - ${newsletterDate}"`);
         console.log(`   body: HTML content (${htmlContent.length} characters)`);
-        console.log(`   style: "PLUNK"`);
+        console.log(`   recipients: [] (send to all contacts)`);
 
-        const campaign = await plunk.campaigns.create({
-          name: `AI News Daily - ${newsletterDate}`,
-          subject: `🤖 AI News Daily - ${newsletterDate}`,
-          body: htmlContent,
-          style: 'PLUNK',
+        // Create campaign
+        const createResponse = await fetch('https://api.useplunk.com/v1/campaigns', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.PLUNK_API_KEY}`,
+          },
+          body: JSON.stringify({
+            name: `AI News Daily - ${newsletterDate}`,
+            subject: `🤖 AI News Daily - ${newsletterDate}`,
+            body: htmlContent,
+            recipients: [], // Empty array means all contacts
+          }),
         });
 
+        if (!createResponse.ok) {
+          const errorText = await createResponse.text();
+          throw new Error(`Failed to create campaign: ${createResponse.status} ${createResponse.statusText} - ${errorText}`);
+        }
+
+        const campaign = await createResponse.json();
         console.log('\n✅ Campaign Created:');
         console.log(JSON.stringify(campaign, null, 2));
         console.log(`   Campaign ID: ${campaign.id}`);
 
-        // Step 2: Send the campaign to all contacts
+        // Send campaign
         console.log('\n🔧 Step 2: Sending Campaign to All Contacts');
+        console.log(`   POST https://api.useplunk.com/v1/campaigns/send`);
+        console.log(`   Campaign ID: ${campaign.id}`);
 
-        result = await plunk.campaigns.send(campaign.id);
+        const sendResponse = await fetch(`https://api.useplunk.com/v1/campaigns/send`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.PLUNK_API_KEY}`,
+          },
+          body: JSON.stringify({
+            id: campaign.id,
+            delay: 0, // Send immediately (no delay)
+          }),
+        });
 
+        if (!sendResponse.ok) {
+          const errorText = await sendResponse.text();
+          throw new Error(`Failed to send campaign: ${sendResponse.status} ${sendResponse.statusText} - ${errorText}`);
+        }
+
+        const sendResult = await sendResponse.json();
         console.log('\n✅ Campaign Sent Successfully:');
-        console.log(JSON.stringify(result, null, 2));
+        console.log(JSON.stringify(sendResult, null, 2));
         console.log(`\n✅ Newsletter broadcast successfully to all contacts!`);
 
         return {
@@ -241,15 +165,15 @@ const sendNewsletterTool = tool({
           broadcast: true,
         };
       } else {
-        // Send to single recipient
-        const recipient = input.recipientEmail || process.env.RECIPIENT_EMAIL;
+        // SINGLE RECIPIENT MODE: Use emails.send
+        const recipient = (input.recipientEmail && input.recipientEmail !== '') ? input.recipientEmail : process.env.RECIPIENT_EMAIL;
 
         console.log('🔧 Plunk API Call Details:');
         console.log(`   to: "${recipient}"`);
         console.log(`   subject: "🤖 AI News Daily - ${newsletterDate}"`);
         console.log(`   body: HTML content (${htmlContent.length} characters)`);
 
-        result = await plunk.emails.send({
+        const result = await plunk.emails.send({
           to: recipient,
           subject: `🤖 AI News Daily - ${newsletterDate}`,
           body: htmlContent,
@@ -259,11 +183,11 @@ const sendNewsletterTool = tool({
         console.log(JSON.stringify(result, null, 2));
         console.log(`\n✅ Newsletter sent successfully!`);
         console.log(`   Recipient: ${recipient}`);
-        console.log(`   Message ID: ${result.messageId || result.id}`);
+        console.log(`   Message ID: ${result.messageId || result.id || 'N/A'}`);
 
         return {
           success: true,
-          messageId: result.messageId || result.id,
+          messageId: result.messageId || result.id || 'N/A',
           recipient: recipient,
           articleCount: input.articles.length,
           date: newsletterDate,
@@ -281,10 +205,16 @@ const sendNewsletterTool = tool({
       }
       console.error('='.repeat(60) + '\n');
 
+      const isBroadcast = input.broadcastToAll || process.env.PLUNK_BROADCAST_MODE === 'true';
+      const recipient = isBroadcast
+        ? 'all contacts (broadcast)'
+        : ((input.recipientEmail && input.recipientEmail !== '') ? input.recipientEmail : process.env.RECIPIENT_EMAIL || 'unknown');
+
       return {
         success: false,
         error: error.message,
-        recipient: isBroadcast ? 'all contacts (broadcast)' : (input.recipientEmail || process.env.RECIPIENT_EMAIL),
+        recipient: recipient,
+        broadcast: isBroadcast,
       };
     }
   },

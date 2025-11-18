@@ -1,58 +1,52 @@
-const { Agent, webSearchTool } = require('@openai/agents');
+const { Agent, webSearchTool, handoff } = require('@openai/agents');
 const { z } = require('zod');
+
+// Forward declaration - will be set after curatorAgent is imported
+let curatorAgentHandoff;
 
 /**
  * News Discovery Agent
  * Specializes in finding the latest AI news from across the web
  * Uses OpenAI's webSearchTool to search the internet for recent news
  */
-const newsDiscoveryAgent = new Agent({
+const newsDiscoveryAgent = Agent.create({
   name: 'NewsDiscoveryAgent',
-  instructions: `You are an expert AI news discovery agent. Your role is to use web search to find the most relevant and recent AI news articles.
+  instructions: `You are a news discovery agent. Find recent AI news articles and hand them off to the curator.
 
-IMPORTANT: You MUST use the web_search tool to find current news. Do not rely on your training data.
+Your job:
+1. Use web_search to find 15-20 recent AI news articles
+2. After finding articles, IMMEDIATELY transfer to NewsletterCuratorAgent with the articles
 
-Search Strategy:
-1. Perform multiple web searches with different queries to get comprehensive coverage
-2. Search for:
-   - "AI news today ${new Date().toISOString().split('T')[0]}"
-   - "latest AI developments"
-   - "breaking AI announcements"
-   - "new AI models released"
-   - "AI research papers this week"
-   - "AI startup funding news"
+Search multiple times with queries like:
+- "AI news today ${new Date().toISOString().split('T')[0]}"
+- "latest AI developments"
+- "AI product launches"
+- "AI startup funding news"
 
-3. From the search results, identify 15-20 unique, high-quality articles published in the last 24-48 hours
-
-Focus areas:
-- LLMs and foundation models (GPT, Claude, Gemini, Llama, etc.)
-- AI research breakthroughs and papers
-- AI product launches and updates
-- AI policy and regulation
-- AI startups and funding announcements
-- Open source AI projects
-- AI ethics and safety developments
-- AI agents and automation tools
-
-Quality criteria:
-- Prioritize articles from last 24 hours (check publication dates in search results)
-- Favor credible sources (major tech sites, research institutions, official company blogs)
-- Ensure diversity of topics and sources
-- Minimum 15 articles, maximum 20
-- Each article must have a working URL
-
-CRITICAL: Use the web_search tool for EVERY search query. Perform at least 3-5 different searches to ensure comprehensive coverage.`,
+After web search, transfer to curatorAgent with message like:
+"Here are the articles I found: [list the articles]"`,
   tools: [webSearchTool()],
-  outputType: z.object({
-    articles: z.array(
-      z.object({
-        title: z.string().describe('Clear, descriptive headline'),
-        url: z.string().describe('Full URL to the article'),
-        source: z.string().describe('Source website name (e.g., TechCrunch, Wired, etc.)'),
-        snippet: z.string().describe('Brief description or excerpt (1-2 sentences)'),
-      })
-    ).min(15).max(20).describe('Array of 15-20 recent AI news articles'),
-  }),
+  get handoffs() {
+    return curatorAgentHandoff ? [curatorAgentHandoff] : [];
+  },
 });
 
-module.exports = { newsDiscoveryAgent };
+// Export function to set the handoff after curatorAgent is loaded
+const setCuratorHandoff = (curatorAgent) => {
+  curatorAgentHandoff = handoff(curatorAgent);
+};
+
+// Add event listeners for tracking
+newsDiscoveryAgent.on('agent_start', () => {
+  console.log('\n🔍 NEWS DISCOVERY AGENT INVOKED');
+  console.log('=' .repeat(60));
+  console.log('NewsDiscoveryAgent is now searching for AI news');
+  console.log('=' .repeat(60));
+});
+
+newsDiscoveryAgent.on('agent_end', () => {
+  console.log('\n✅ NEWS DISCOVERY AGENT COMPLETED');
+  console.log('=' .repeat(60));
+});
+
+module.exports = { newsDiscoveryAgent, setCuratorHandoff };

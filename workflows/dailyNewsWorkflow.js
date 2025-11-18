@@ -18,11 +18,11 @@ async function runDailyNewsWorkflow() {
     }
 
     // Run the controller agent which will orchestrate the entire workflow
-    console.log('🎯 Starting controller agent...');
+    console.log('🎯 Starting controller agent with streaming enabled...');
     console.log(`📋 Broadcast Mode: ${process.env.PLUNK_BROADCAST_MODE}`);
     console.log(`📋 Recipient Email: ${recipientEmail}\n`);
 
-    const result = await run(
+    const streamedResult = await run(
       controllerAgent,
       `Generate and send today's AI news newsletter to ${recipientEmail}.
 
@@ -31,10 +31,38 @@ async function runDailyNewsWorkflow() {
       2. Read and curate the top 10 most important stories
       3. Send the formatted newsletter email
 
-      Please complete all steps.`
+      Please complete all steps.`,
+      { stream: true }
     );
 
-    console.log('\n' + '='.repeat(60));
+    // Handle streaming events
+    let lastAgent = '';
+    for await (const chunk of streamedResult) {
+      // Track agent switches
+      if (chunk.type === 'agent_start') {
+        lastAgent = chunk.agent.name;
+        console.log(`\n🔵 [STREAM] Agent started: ${chunk.agent.name}`);
+      }
+
+      // Show agent thinking/messages
+      if (chunk.type === 'text_delta' && chunk.text) {
+        process.stdout.write(chunk.text);
+      }
+
+      // Track tool calls
+      if (chunk.type === 'tool_call_delta' && chunk.toolCall) {
+        console.log(`\n🔧 [STREAM] Tool called by ${lastAgent}: ${chunk.toolCall.function?.name || 'unknown'}`);
+      }
+
+      // Track handoffs
+      if (chunk.type === 'handoff') {
+        console.log(`\n🔄 [STREAM] Handoff detected → ${chunk.target?.name || 'unknown agent'}`);
+      }
+    }
+
+    const result = streamedResult;
+
+    console.log('\n\n' + '='.repeat(60));
     console.log('✅ Newsletter workflow completed successfully!');
     console.log('='.repeat(60));
     console.log('\n📧 Result object:');
