@@ -1,0 +1,24 @@
+{
+  "name": "ai-news-newsletter",
+  "version": "1.0.0",
+  "description": "Automated AI news newsletter powered by OpenAI Agents, deployed on Cloudflare Workers",
+  "main": "worker.js",
+  "scripts": {
+    "test-newsletter": "node test-newsletter.js",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["ai", "newsletter", "openai", "agents", "cloudflare", "automation"],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@openai/agents": "^0.3.2",
+    "@plunk/node": "^3.0.3",
+    "dotenv": "^17.2.3",
+    "wrangler": "^4.49.0",
+    "zod": "^3.25.76"
+  }
+}
