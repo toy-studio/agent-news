@@ -6,9 +6,8 @@
 # Dependencies
 node_modules/
 
-# Cloudflare
-.wrangler/
-wrangler.toml.backup
+# Vercel
+.vercel
 
 # Logs
 *.log
