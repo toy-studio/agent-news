@@ -76,7 +76,7 @@ const sendNewsletterTool = tool({
   <meta charset="UTF-8">
 </head>
 <body>
-  <h1>🤖 AI News Daily</h1>
+  <h1>Jonny's AI Newsletter</h1>
   <p>${newsletterDate}</p>
 
   ${input.articles.map((article, index) => `
