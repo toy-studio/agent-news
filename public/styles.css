@@ -21,3 +21,58 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Chrome Dino styles */
+#dino-container {
+  position: relative;
+  width: 44px; /* Total dino width */
+  height: 48px; /* Total dino height */
+  margin: 0 auto 20px auto; /* Center the dino and add some space below */
+  overflow: hidden; /* Hide overflow for jumping animation */
+}
+
+#dino {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 44px;
+  height: 48px;
+  background-color: transparent;
+}
+
+/* Dino Body */
+#dino::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 30px;
+  height: 30px;
+  background-color: #535353; /* Dark gray */
+  border-radius: 5px;
+}
+
+/* Dino Head */
+#dino::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 25px;
+  width: 20px;
+  height: 20px;
+  background-color: #535353; /* Dark gray */
+  border-radius: 50%;
+  transform: rotate(20deg);
+  transform-origin: bottom left;
+}
+
+/* Jumping animation */
+@keyframes jump {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-60px); } /* Adjust jump height */
+  100% { transform: translateY(0); }
+}
+
+.jumping #dino {
+  animation: jump 0.6s linear forwards; /* Adjust animation duration */
+}

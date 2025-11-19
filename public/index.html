@@ -20,7 +20,11 @@
 
     <!-- Header -->
     <section class="mb-14">
+      <div id="dino-container" class="relative w-16 h-12 mb-4 mx-auto">
+        <div id="dino" class="absolute bottom-0 left-0 w-8 h-8 bg-gray-500 rounded-full"></div>
+      </div>
       <h1 class="text-xl font-normal mb-2">Agent News</h1>
+
       <p class=" text-slate-600 dark:text-slate-400">
         Top 10 AI agents stories, delivered every morning
       </p>
@@ -195,6 +199,23 @@
       }`;
       messageDiv.classList.remove('hidden');
     }
+
+    // Dinosaur jumping animation
+    const dino = document.getElementById('dino');
+    let isJumping = false;
+
+    document.addEventListener('keydown', (event) => {
+      if (event.code === 'Space' && !isJumping) {
+        isJumping = true;
+        dino.classList.add('jumping');
+
+        // Remove the 'jumping' class after the animation completes
+        dino.addEventListener('animationend', () => {
+          dino.classList.remove('jumping');
+          isJumping = false;
+        }, { once: true });
+      }
+    });
 
     // Auto-focus email input on desktop only (avoid zoom on mobile)
     if (window.innerWidth > 768) {
