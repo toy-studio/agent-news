@@ -18,6 +18,9 @@
 <body class="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
   <main class="max-w-xl mx-auto px-6 py-16 min-h-screen flex flex-col gap-8">
 
+    <!-- Confirmation Message -->
+    <div id="message" class="hidden"></div>
+
     <!-- Header -->
     <section class="">
       <div id="dino-container" class="mb-4">
@@ -93,7 +96,6 @@
             Subscribe
           </button>
         </div>
-        <div id="message" class="mt-3  hidden"></div>
       </form>
     </section>
 
@@ -115,12 +117,15 @@
 
     function showMessage(text, type) {
       messageDiv.textContent = text;
-      messageDiv.className = `mt-3  ${
+      messageDiv.className = `mb-6 p-4 rounded-md ${
         type === 'success'
-          ? 'text-green-600 dark:text-green-400'
-          : 'text-red-600 dark:text-red-400'
+          ? 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-800'
+          : 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800'
       }`;
       messageDiv.classList.remove('hidden');
+      
+      // Scroll to top to ensure message is visible
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     // Check for confirmation or error in URL parameters
