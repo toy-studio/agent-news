@@ -52,60 +52,68 @@ module.exports = async (req, res) => {
 
     console.log('📧 New subscription request:', email);
 
-    // Add contact to Plunk
-    const plunkResponse = await fetch('https://api.useplunk.com/v1/contacts', {
+    // Track event in Plunk to trigger confirmation email (creates contact if doesn't exist)
+    const plunkResponse = await fetch('https://api.useplunk.com/v1/track', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${process.env.PLUNK_API_KEY}`,
       },
       body: JSON.stringify({
+        event: 'subscribed',
         email: email,
-        subscribed: true,
-        data: {
-          source: 'website',
-          subscribedAt: new Date().toISOString(),
-        },
+        subscribed: false,
       }),
     });
 
-    const plunkData = await plunkResponse.json();
+    // Parse response text first (can only read once)
+    const responseText = await plunkResponse.text();
 
     if (!plunkResponse.ok) {
-      console.error('Plunk API error:', plunkData);
-
-      // Handle duplicate email gracefully
-      if (plunkResponse.status === 400 && plunkData.error?.includes('already exists')) {
-        return res.status(200).json({
-          success: true,
-          message: 'You are already subscribed!',
-          alreadySubscribed: true,
-        });
+      let errorMessage = 'Failed to process subscription. Please try again.';
+      try {
+        const plunkData = JSON.parse(responseText);
+        console.error('Plunk API error:', plunkData);
+        errorMessage = plunkData.error || plunkData.message || errorMessage;
+      } catch (parseError) {
+        console.error('Plunk API error (non-JSON):', responseText);
       }
-
       return res.status(plunkResponse.status).json({
         success: false,
-        error: 'Failed to subscribe. Please try again.',
+        error: errorMessage,
       });
     }
 
-    console.log('✅ Subscription successful:', email);
+    // Get the contact to retrieve the ID
+    const getContactResponse = await fetch(`https://api.useplunk.com/v1/contacts/${encodeURIComponent(email)}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.PLUNK_API_KEY}`,
+      },
+    });
 
-    // Optional: Send welcome email
-    try {
-      await sendWelcomeEmail(email);
-    } catch (welcomeError) {
-      console.error('Failed to send welcome email:', welcomeError);
-      // Don't fail the subscription if welcome email fails
+    const contactResponseText = await getContactResponse.text();
+    let contactId = null;
+
+    if (getContactResponse.ok) {
+      try {
+        const contactData = JSON.parse(contactResponseText);
+        contactId = contactData.id;
+        console.log('✅ Contact ID retrieved:', contactId);
+      } catch (parseError) {
+        console.error('Failed to parse contact response:', contactResponseText);
+      }
+    } else {
+      console.warn('Could not retrieve contact ID, but event was tracked');
     }
+
+    console.log('✅ Subscription event tracked, confirmation email will be sent:', email);
 
     return res.status(200).json({
       success: true,
-      message: 'Successfully subscribed! Check your email.',
-      contact: {
-        id: plunkData.id,
-        email: email,
-      },
+      message: 'Please check your email to confirm your subscription.',
+      contactId: contactId, // Include for testing/debugging
     });
 
   } catch (error) {
@@ -117,60 +125,3 @@ module.exports = async (req, res) => {
   }
 };
 
-/**
- * Send welcome email to new subscriber
- */
-async function sendWelcomeEmail(email) {
-  const welcomeHtml = `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-</head>
-<body>
-  <h1>Welcome to AI News Daily! 🎉</h1>
-
-  <p>Thanks for subscribing! You'll receive your first newsletter tomorrow morning.</p>
-
-  <h2>What to expect:</h2>
-  <ul>
-    <li>📰 Top 10 AI news stories every day</li>
-    <li>🤖 Curated by autonomous AI agents</li>
-    <li>⚡ Real-time web search for the latest news</li>
-    <li>✨ Clear summaries that explain why it matters</li>
-  </ul>
-
-  <p>Your newsletter will arrive at 8:00 AM UTC daily.</p>
-
-  <p>Have feedback? Just reply to any newsletter email!</p>
-
-  <hr>
-
-  <p style="font-size: 12px; color: #666;">
-    You're receiving this because you subscribed at ai-newsletter-rho.vercel.app<br>
-    Don't want these emails? You can unsubscribe anytime by clicking the link in any newsletter.
-  </p>
-</body>
-</html>
-  `;
-
-  const response = await fetch('https://api.useplunk.com/v1/send', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${process.env.PLUNK_API_KEY}`,
-    },
-    body: JSON.stringify({
-      to: email,
-      subject: '🤖 Welcome to AI News Daily!',
-      body: welcomeHtml,
-    }),
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Failed to send welcome email: ${error}`);
-  }
-
-  console.log('✅ Welcome email sent to:', email);
-}

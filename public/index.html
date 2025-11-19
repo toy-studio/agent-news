@@ -113,6 +113,45 @@
     const submitBtn = document.getElementById('submitBtn');
     const messageDiv = document.getElementById('message');
 
+    function showMessage(text, type) {
+      messageDiv.textContent = text;
+      messageDiv.className = `mt-3  ${
+        type === 'success'
+          ? 'text-green-600 dark:text-green-400'
+          : 'text-red-600 dark:text-red-400'
+      }`;
+      messageDiv.classList.remove('hidden');
+    }
+
+    // Check for confirmation or error in URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const confirmEmail = urlParams.get('confirm');
+    const already = urlParams.get('already');
+    const error = urlParams.get('error');
+
+    if (confirmEmail) {
+      // Show success message for confirmed subscription
+      const message = already === 'true'
+        ? `✓ ${decodeURIComponent(confirmEmail)} is already subscribed!`
+        : `✓ Success! ${decodeURIComponent(confirmEmail)} has been confirmed. You're all set!`;
+      showMessage(message, 'success');
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (error) {
+      // Show error message
+      const errorMessage = decodeURIComponent(error);
+      showMessage(errorMessage === 'missing_email' ? 'Missing email address.' :
+                  errorMessage === 'missing_contact_id' ? 'Missing confirmation link.' :
+                  errorMessage === 'invalid_email' ? 'Invalid email address.' :
+                  errorMessage === 'contact_not_found' ? 'Invalid or expired confirmation link. Please subscribe again.' :
+                  errorMessage === 'email_mismatch' ? 'Email verification failed.' :
+                  errorMessage === 'server_error' ? 'Server configuration error.' :
+                  errorMessage === 'unexpected_error' ? 'An unexpected error occurred.' :
+                  errorMessage, 'error');
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -152,16 +191,6 @@
         submitBtn.textContent = 'Subscribe';
       }
     });
-
-    function showMessage(text, type) {
-      messageDiv.textContent = text;
-      messageDiv.className = `mt-3  ${
-        type === 'success'
-          ? 'text-green-600 dark:text-green-400'
-          : 'text-red-600 dark:text-red-400'
-      }`;
-      messageDiv.classList.remove('hidden');
-    }
 
     // Dinosaur jumping animation
     const dino = document.getElementById('dino');
