@@ -9,19 +9,19 @@
   <style>
     body {
       font-family: ui-sans-serif, system-ui, sans-serif;
-      font-weight: 300;
+      font-weight: 400;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
   </style>
 </head>
 <body class="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
-  <main class="max-w-xl mx-auto px-6 py-16 min-h-screen">
+  <main class="max-w-xl mx-auto px-6 py-16 min-h-screen flex flex-col gap-8">
 
     <!-- Header -->
-    <section class="mb-14">
-      <div id="dino-container" class="relative w-16 h-12 mb-4">
-        <div id="dino" class="text-xs font-mono absolute bottom-0 left-0 flex gap-2 pb-2">
+    <section class="">
+      <div id="dino-container" class="mb-4">
+        <div id="dino" class="text-xs font-mono flex gap-2 pb-2">
           <div class="flex flex-col items-center justify-center text-amber-300 dark:text-amber-600">
             <span class="block">;</span>
             <span class="block">["]</span>
@@ -50,8 +50,8 @@
     </section>
 
     <!-- About -->
-    <section class="my-9 ">
-      <h3 class="mb-3 font-normal">About</h3>
+    <section class="">
+      <h3 class="mb-3 font-normal text-slate-400 dark:text-slate-700">About</h3>
       <div class="text-slate-600 dark:text-slate-400 leading-relaxed">
         <p class="mb-3">
           A daily newsletter focused exclusively on AI agents - autonomous AI systems that use tools, make decisions, and take actions.
@@ -63,101 +63,45 @@
       </div>
     </section>
 
-        <!-- Subscribe -->
-        <section class="my-14 ">
-          <h3 class="mb-6 font-normal">Subscribe</h3>
-          <form id="signupForm" class="max-w-md flex flex-col md:flex-row gap-3">
-            <div class="flex flex-col md:flex-row gap-3">
-              <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="your@email.com"
-                required
-                autocomplete="email"
-                style="font-size: 16px;"
-                class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-800 rounded-md
-                       bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100
-                       placeholder:text-slate-400 dark:placeholder:text-slate-500
-                       focus:outline-none focus:ring-2 focus:ring-slate-400 dark:focus:ring-slate-600
-                       transition-all"
-              >
-              <button
-                type="submit"
-                id="submitBtn"
-                class="px-4 py-2.5  bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900
-                       rounded-md hover:bg-slate-800 dark:hover:bg-slate-200
-                       transition-colors disabled:opacity-50 disabled:cursor-not-allowed
-                       font-normal"
-              >
-                Subscribe
-              </button>
-            </div>
-            <div id="message" class="mt-3  hidden"></div>
-          </form>
-        </section>
-
-    <!-- What You Get -->
-    <section class="my-14 ">
-      <h3 class="mb-6 font-normal">What you get</h3>
-      <div class="flex flex-col gap-6">
-
-        <div class="flex flex-col md:flex-row">
-          <div class="mr-8 max-w-[100px] w-full text-slate-400 dark:text-slate-500 flex-shrink-0">
-            Daily
-          </div>
-          <div class="flex flex-col flex-1">
-            <h4 class="font-normal">10 agent stories</h4>
-            <p class="text-slate-600 dark:text-slate-400 mt-1">
-              The most important AI agents news from the past 24 hours
-            </p>
-          </div>
+    <!-- Subscribe -->
+    <section class="flex-grow">
+      <h3 class="mb-3 font-normal text-slate-400 dark:text-slate-700">Subscribe</h3>
+      <form id="signupForm" class="max-w-md flex flex-col gap-1">
+        <div class="flex-1 flex flex-col md:flex-row gap-3">
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="your@email.com"
+            required
+            autocomplete="email"
+            style="font-size: 16px;"
+            class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-800 rounded-md
+                    bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100
+                    placeholder:text-slate-400 dark:placeholder:text-slate-500
+                    focus:outline-none focus:ring-2 focus:ring-slate-400 dark:focus:ring-slate-600
+                    transition-all"
+          >
+          <button
+            type="submit"
+            id="submitBtn"
+            class="px-4 py-2.5  bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900
+                    rounded-md hover:bg-slate-800 dark:hover:bg-slate-200
+                    transition-colors disabled:opacity-50 disabled:cursor-not-allowed
+                    font-normal"
+          >
+            Subscribe
+          </button>
         </div>
-
-        <div class="flex flex-col md:flex-row">
-          <div class="mr-8 max-w-[100px] w-full text-slate-400 dark:text-slate-500 flex-shrink-0">
-            Quality
-          </div>
-          <div class="flex flex-col flex-1">
-            <h4 class="font-normal">Clear summaries</h4>
-            <p class="text-slate-600 dark:text-slate-400 mt-1">
-              Each story explained with context on why it matters for agentic AI
-            </p>
-          </div>
-        </div>
-
-        <div class="flex flex-col md:flex-row">
-          <div class="mr-8 max-w-[100px] w-full text-slate-400 dark:text-slate-500 flex-shrink-0">
-            Coverage
-          </div>
-          <div class="flex flex-col flex-1">
-            <h4 class="font-normal">Diverse topics</h4>
-            <p class="text-slate-600 dark:text-slate-400 mt-1">
-              Agent frameworks, multi-agent systems, tools, research, startups, and more
-            </p>
-          </div>
-        </div>
-
-        <div class="flex flex-col md:flex-row">
-          <div class="mr-8 max-w-[100px] w-full text-slate-400 dark:text-slate-500 flex-shrink-0">
-            Free
-          </div>
-          <div class="flex flex-col flex-1">
-            <h4 class="font-normal">No cost, no spam</h4>
-            <p class="text-slate-600 dark:text-slate-400 mt-1">
-              100% free forever. Unsubscribe anytime with one click.
-            </p>
-          </div>
-        </div>
-
-      </div>
+        <div id="message" class="mt-3  hidden"></div>
+      </form>
     </section>
 
     <!-- Footer -->
-    <footer class="mt-20 pt-6 border-t border-slate-200 dark:border-slate-800  text-slate-400 dark:text-slate-500">
+    <footer class="pt-6  text-slate-400 dark:text-slate-500">
       <p>
-        Powered by AI agents • Built by <a href="https://toy.studio" target="_blank" rel="noopener noreferrer" class="text-slate-600 dark:text-slate-300 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">toy.studio</a> •
-        <a href="https://github.com/toy-studio/agent-news" target="_blank" rel="noopener noreferrer" class="text-slate-600 dark:text-slate-300 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">Github</a>
+        Powered by AI agents • Built by <a href="https://toy.studio" target="_blank" rel="noopener noreferrer" class="text-amber-400 dark:text-amber-500 hover:text-amber-600 dark:hover:text-amber-300 transition-colors">toy.studio</a> •
+        <a href="https://github.com/toy-studio/agent-news" target="_blank" rel="noopener noreferrer" class="">view source</a>
       </p>
     </footer>
 
