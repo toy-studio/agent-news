@@ -114,6 +114,31 @@ module.exports = async (req, res) => {
 
     console.log('✅ Subscription confirmed:', contactEmail);
 
+    // Track subscription-confirmed event
+    try {
+      const trackResponse = await fetch('https://api.useplunk.com/v1/track', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.PLUNK_API_KEY}`,
+        },
+        body: JSON.stringify({
+          event: 'subscription-confirmed',
+          email: contactEmail,
+          subscribed: true,
+        }),
+      });
+
+      if (trackResponse.ok) {
+        console.log('✅ Subscription-confirmed event tracked for:', contactEmail);
+      } else {
+        console.warn('⚠️ Failed to track subscription-confirmed event');
+      }
+    } catch (trackError) {
+      // Don't fail the confirmation if event tracking fails
+      console.error('Failed to track subscription-confirmed event:', trackError);
+    }
+
     // Redirect back to homepage with success parameter
     return res.redirect(`/?confirm=${encodeURIComponent(contactEmail)}`);
 
