@@ -5,10 +5,17 @@
   "main": "api/newsletter.js",
   "scripts": {
     "test-newsletter": "node test-newsletter.js",
-    "dev": "vercel dev",
-    "preview": "cd public && python3 -m http.server 8000"
+    "dev": "serve public"
   },
-  "keywords": ["ai-agents", "newsletter", "openai", "agents", "vercel", "automation", "agentic-ai"],
+  "keywords": [
+    "ai-agents",
+    "newsletter",
+    "openai",
+    "agents",
+    "vercel",
+    "automation",
+    "agentic-ai"
+  ],
   "author": "toy.studio",
   "license": "MIT",
   "repository": {
@@ -22,5 +29,8 @@
     "@plunk/node": "^3.0.3",
     "dotenv": "^17.2.3",
     "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "serve": "^14.2.5"
   }
 }
