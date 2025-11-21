@@ -13,10 +13,9 @@ module.exports = async (req, res) => {
 
   // Verify this is a cron request or has proper authorization
   const authHeader = req.headers.authorization;
-  const cronSecret = process.env.CRON_SECRET || req.headers['x-vercel-signature'];
 
-  // Allow Vercel Cron (has x-vercel-signature header) or manual trigger with auth
-  const isVercelCron = req.headers['x-vercel-signature'];
+  // Allow Vercel Cron (sends CRON_SECRET as Bearer token) or manual trigger with auth
+  const isVercelCron = authHeader === `Bearer ${process.env.CRON_SECRET}`;
   const isManualTrigger = authHeader === `Bearer ${process.env.TRIGGER_SECRET}`;
 
   if (!isVercelCron && !isManualTrigger) {
